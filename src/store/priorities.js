@@ -20,6 +20,8 @@ export default {
     },
     actions: {},
     getters: {
-
+        getPriorities (state) {
+            return state.priorities
+        }
     }
 }

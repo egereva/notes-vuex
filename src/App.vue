@@ -5,10 +5,10 @@
       <section>
         <div class="container">
           <!-- message -->
-          <message  v-if="message" :message="message" />
+          <message  v-if="message"/>
 
           <!-- new note -->
-          <newNote :note = "note" :priorities="priorities" @addNote = "addNote"/>
+          <newNote/>
 
           <div class="note-header" style="margin: 36px 0;">
             <!--title-->
@@ -18,7 +18,7 @@
             <search
                     :value="search"
                     placeholder="Find your note"
-                    @search="search = $event"/>
+            />
 
             <!-- icons controls-->
             <div class="icons">
@@ -28,7 +28,7 @@
           </div>
 
           <!-- note list -->
-          <notes :notes = "notesFilter" :grid="grid" @closeEdit="closeEdit"   @remove="removeNote"/>
+          <notes :grid="grid"/>
 
         </div>
       </section>
@@ -53,82 +53,20 @@ export default {
   data() {
     return {
       title: 'Notes App',
-      search: '',
-      message: null,
       grid: true,
-      note: {
-        id: '',
-        title: '',
-        descr: '',
-        priority: 'standard',
-        selected: false
-      },
-      notes: null,
-      priorities: [
-        {
-          title: 'Стандартный',
-          value: 'standard',
-        },
-        {
-          title: 'Важный',
-          value: 'important',
-        },
-        {
-          title: 'Очень важный',
-          value: 'veryImportant',
-        }
-      ],
     }
   },
-  created() {
-      this.notes = this.$store.getters.getNotes
-    },
   methods: {
-    addNote () {
-      let {title, descr, priority} = this.note
-
-      if (title === '') {
-        this.message = 'title can`t be blank!'
-        return false
-      }
-
-      this.notes.push({
-        title,
-        descr,
-        date: new Date(Date.now()).toLocaleString(),
-        priority,
-        id: this.notes[this.notes.length - 1].id + 1,
-        selected: false
-      })
-
-      this.message = null
-      this.note.title = ''
-      this.note.descr = ''
-      this.note.priority = 'standard',
-      this.note.selected = false
-    },
-    removeNote (index) {
-      this.notes.splice(index, 1)
-    },
     closeEdit () {
-      this.notes.forEach(note => note.selected = false)
+      this.$store.dispatch('closeEdit')
     }
   },
   computed: {
-    notesFilter () {
-      let array = this.notes,
-          search = this.search
-      if(!search) return array
-      // Small
-      search = search.trim().toLowerCase()
-      //Filter
-      array = array.filter(function(item) {
-        if (item.title.toLowerCase().indexOf(search) !== -1) {
-          return item
-        }
-      })
-      // Error
-      return array;
+    search () {
+      return this.$store.getters.getSearchValue
+    },
+    message () {
+      return this.$store.getters.getMessage
     }
   }
 

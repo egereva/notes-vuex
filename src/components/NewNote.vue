@@ -18,27 +18,45 @@
 <script>
     export default {
         props: {
-            note: {
-                type: Object,
-                required: true
-            },
-            priorities: {
-                type: Array,
-                required: true
-            }
         },
         data() {
             return {
                 currentPriority: 'standard'
             }
         },
+        computed: {
+          note() {
+              return this.$store.getters.getNote
+          },
+          priorities() {
+              return this.$store.getters.getPriorities
+          }
+        },
         methods: {
             addNote () {
-                this.$emit('addNote', this.note)
+                let {title, descr, priority} = this.$store.getters.getNote
+
+                if (title === '') {
+                    this.$store.dispatch('setMessage',{mes: 'title can`t be blank!'} )
+                    return false
+                }
+
+                this.$store.dispatch('addNote',{
+                    title,
+                    descr,
+                    date: new Date(Date.now()).toLocaleString(),
+                    priority,
+                    selected: false
+                })
+
+
+                this.$store.dispatch('setMessage',{mes: null} )
                 this.currentPriority = 'standard'
+
+                this.$store.dispatch('resetNote')
             },
             selectPriority () {
-                this.note.priority = this.currentPriority
+                this.$store.dispatch('setPriority', this.currentPriority)
             }
         }
     }

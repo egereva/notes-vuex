@@ -40,10 +40,6 @@
 <script>
     export default  {
         props: {
-            notes: {
-                type: Array,
-                required: true
-            },
             grid: {
                 type: Boolean,
                 required: true
@@ -61,20 +57,21 @@
         mounted() {
         },
         computed: {
-
+            notes () {
+                return this.$store.getters.getNotesFilter
+            }
         },
         methods: {
             removeNote(index) {
-                console.log(`Note id - ${index} removed`)
-                this.$emit('remove', index)
+                this.$store.dispatch('removeNote', index)
             },
             editString(index, string) {
+              this.$store.dispatch('editString', index)
+
               if (string === this.notes[index].title ) {
                   this.titleEdit = true
                   this.descriptionEdit = false
 
-                  this.notes.forEach( note => note.selected = false )
-                  this.notes[index].selected = true
                   this.newTitle = this.notes[index].title
 
                   this.$nextTick(function(){
@@ -84,8 +81,6 @@
                   this.titleEdit = false
                   this.descriptionEdit = true
 
-                  this.notes.forEach( note => note.selected = false )
-                  this.notes[index].selected = true
                   this.newDescription = this.notes[index].descr
 
                   this.$nextTick(function(){
@@ -94,23 +89,24 @@
               }
             },
             saveСhanges(index) {
-                this.notes[index].selected = false
+                this.$store.dispatch('saveСhanges', {index: index, newTitle: this.newTitle, newDescription: this.newDescription, titleEdit: this.titleEdit })
 
                 if(this.titleEdit) {
-                    this.notes[index].title = this.newTitle
                     this.newTitle = ''
                 }else {
-                    this.notes[index].descr = this.newDescription
                     this.newDescription= ''
                     }
             },
             deleteСhanges(index) {
-                this.notes[index].selected = false
+                this.$store.dispatch('deleteСhanges', index)
 
                 this.newTitle = ''
                 this.newDescription= ''
 
             },
+            closeEdit() {
+                this.$store.dispatch('closeEdit')
+            }
 
 
         },
